@@ -35,3 +35,9 @@ select:focus {
     border-color: #0d6efd;
     outline: none;
 }
+
+h2{
+    text-align:center;
+}
+
+
