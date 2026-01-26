@@ -2,6 +2,10 @@
     position: relative;
     width: 100%;
     max-width: 740px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 #listaSugestoes {
@@ -40,6 +44,14 @@
     display: block;
     width: 100%;
     max-width: 740px;
+    padding: 8px 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.contribuinte-field .form-control {
+    display: block;
+    width: 100%;
     padding: 8px 10px;
     font-size: 14px;
     box-sizing: border-box;
