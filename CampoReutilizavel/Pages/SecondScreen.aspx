@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPagefile="~/Site.Master" AutoEventWireUp="true" CodeBehind="SecondScreen.aspx.cs" Inherits="CampoReutilizavel.Pages.SecondScreen" %>
+﻿<%@ Page Title="Reutilização do Campo" Language="C#" MasterPagefile="~/Site.Master" AutoEventWireUp="true" CodeBehind="SecondScreen.aspx.cs" Inherits="CampoReutilizavel.Pages.SecondScreen" %>
 <%@ Register TagPrefix="uc" TagName="ContribuinteField" Src="~/Controls/ContribuinteField.ascx" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
