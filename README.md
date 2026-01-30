@@ -1,16 +1,33 @@
-**🔍 Campo Reutilizável de Contribuinte com Autocomplete**
+**🔍 Campo Reutilizável de Contribuinte com Autocomplete e Validação de CNPJ**
 
-Componente reutilizável para consulta de contribuintes por CNPJ ou Nome Empresarial, com autocomplete em tempo real,
+Componente reutilizável para consulta de contribuintes por CNPJ ou Nome Empresarial, com autocomplete em tempo real e validação oficial de CNPJ,
 desenvolvido para aplicações ASP.NET WebForms, visando padronização, reutilização e redução de retrabalho em sistemas corporativos e públicos.
 
 **🎯 Objetivo do Projeto**
 
-O objetivo deste projeto é disponibilizar um campo de busca reutilizável, que possa ser facilmente integrado em diferentes telas de uma aplicação WebForms, 
-eliminando a necessidade de recriar lógica, layout e regras de validação em cada novo módulo do sistema.
+-Disponibilizar um campo de busca reutilizável e inteligente, capaz de:
+
+-Validar CNPJ (formato, existência e regra oficial)
+
+-Consultar dados oficiais na Receita Federal
+
+-Buscar contribuintes cadastrados localmente
+
+-Padronizar layout, regras de negócio e comportamento
+
+-Tudo isso em um único UserControl (.ascx) facilmente reutilizável em múltiplas telas.
 
 **🏛️ Contexto de Uso**
 
-Projetado especialmente para sistemas públicos e corporativos, onde consultas recorrentes a contribuintes são comuns e a manutenção e padronização dos componentes é essencial.
+-Projetado especialmente para sistemas públicos e corporativos, onde:
+
+-Consultas a contribuintes são frequentes
+
+-Regras de validação precisam ser consistentes
+
+-Manutenção e reutilização de componentes são essenciais
+
+-Projetos WebForms legados precisam evoluir sem reescrita completa
 
 **🚀 Funcionalidades**
 
@@ -18,29 +35,66 @@ Projetado especialmente para sistemas públicos e corporativos, onde consultas r
 
 -⚡ Autocomplete em tempo real conforme digitação
 
--♻️ Campo reutilizável via UserControl (.ascx)
+-♻️ Componente reutilizável via UserControl (.ascx)
 
 -🔗 Integração assíncrona com WebService ASMX
 
+-🌐 Validação de CNPJ via API pública oficial
+
+-✅ Verificação de:
+
+  -Formato do CNPJ
+
+  -Dígitos verificadores
+
+Existência na Receita Federal
+
+-🛑 Mensagens claras de erro:
+
+  -CNPJ inválido
+
+  -CNPJ não encontrado
+
 -✍️ Máscara automática de CNPJ
 
--🎨 Interface centralizada e responsiva
+-🎨 Interface centralizada, padronizada e responsiva
 
 -🧩 Fácil integração em múltiplas páginas
+
+-🔄 Fluxo inteligente de validação (API → base local)
+
+**🧠 Fluxo de Validação do CNPJ**
+
+O componente segue o fluxo abaixo:
+
+1️⃣ Usuário digita o CNPJ
+2️⃣ Máscara é aplicada automaticamente
+3️⃣ Consulta à API pública de CNPJ
+4️⃣ Resultado:
+
+-❌ 400 → CNPJ inválido
+
+-❌ 404 → CNPJ não encontrado na Receita
+
+-✅ 200 → CNPJ válido → consulta na base local
+
+-5️⃣ Caso exista localmente, os dados são exibidos
 
 **🛠️ Tecnologias Utilizadas**
 
 **Tecnologia	- Versão**
 
-**ASP.NET WebForm**s	- .NET Framework 4.7 / 4.8
+**ASP.NET WebForms**	- .NET Framework 4.7 / 4.8
+
 **Linguagem**	- C#
 
 **Web Service**	- ASMX
 
 **JavaScript**	- Vanilla JS
+
 **AJAX**	- jQuery
 
-**Estilização** -	HTML, CSS, Bootstrap
+**Estilização**	- HTML, CSS, Bootstrap
 
 **Servidor**	- IIS Express
 
@@ -100,62 +154,80 @@ Visual Studio 2019 ou superior
 
 .NET Framework 4.7 ou 4.8
 
-IIS Express (padrão do Visual Studio)
+IIS Express
 
 **📥 Como Executar o Projeto**
 
-1. Clone o repositório:
-
 git clone https://github.com/gustavo04teixeira/CampoReutilizavel.git
 
-2. Abra a solução no Visual Studio
+Abra a solução no Visual Studio
 
-3. Restaure os pacotes (se necessário)
+Restaure os pacotes (se necessário)
 
-4. Execute o projeto com IIS Express
+Execute o projeto com IIS Express
 
 **🔧 Como Utilizar o Campo Reutilizável**
 
-1. Adicione o UserControl na página desejada:
+1️⃣ Registrar o UserControl
 
-<%@ Register Src="~/Controls/ContribuinteField.ascx" TagPrefix="uc" TagName="ContribuinteField" %>
+<%@ Register Src="~/Controls/ContribuinteField.ascx" 
+    TagPrefix="uc"   
+    TagName="ContribuinteField" %>
 
-2. Insira o componente no HTML da página:
-
+2️⃣ Inserir o componente na página
 <uc:ContribuinteField runat="server" />
 
-3. Pronto! O campo já estará funcionando com autocomplete e máscara de CNPJ.
+3️⃣ Pronto 🎉
+
+O campo já estará funcionando com:
+
+Autocomplete
+
+Máscara de CNPJ
+
+Validação oficial
+
+Mensagens de erro inteligentes
 
 **🧠 Aprendizados e Desafios**
 
-Durante o desenvolvimento deste projeto, foram explorados e consolidados conceitos como:
+Durante o desenvolvimento foram consolidados conceitos como:
 
-- Criação de componentes reutilizáveis em WebForms
+-Criação de UserControls reutilizáveis em WebForms
 
-- Comunicação assíncrona com ASMX via AJAX
+-Comunicação assíncrona com ASMX via AJAX
 
-- Manipulação dinâmica do DOM
+-Integração com API pública de validação de CNPJ
 
-- Máscaras de input em JavaScript
+-Manipulação dinâmica do DOM
 
-- Contorno de limitações do EventValidation do WebForms
+-Máscaras de input em JavaScript
 
-- Organização de projetos para escalabilidade e manutenção
+-Tratamento de status HTTP (200, 400, 404)
+
+-Contorno das limitações do EventValidation do WebForms
+
+-Organização de projeto para manutenção e escalabilidade
 
 **⭐ Diferenciais do Projeto**
 
-- Foco em reutilização de código
+✔ Validação real de CNPJ (não apenas regex)
 
-- Arquitetura simples e organizada
+✔ Mensagens de erro claras e amigáveis
 
-- Pronto para integração em sistemas reais
+✔ Código reutilizável e desacoplado
 
-- Ideal para projetos WebForms legados ou em manutenção evolutiva
+✔ Arquitetura simples e organizada
+
+✔ Pronto para uso em sistemas reais
+
+✔ Ideal para WebForms legados ou manutenção evolutiva
 
 **👨‍💻 Autor**
 
-**Gustavo Teixeira**  
-Florianópolis – SC, Brasil  
+Gustavo Teixeira
+Florianópolis – SC, Brasil
 
-- GitHub: https://github.com/gustavo04teixeira  
-- LinkedIn: https://www.linkedin.com/in/gustavo-adolfo-teixeira-5a15311b2/
+GitHub: https://github.com/gustavo04teixeira
+
+LinkedIn: https://www.linkedin.com/in/gustavo-adolfo-teixeira-5a15311b2/
