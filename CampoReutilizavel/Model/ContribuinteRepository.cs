@@ -24,8 +24,6 @@ namespace CampoReutilizavel.Model
             new Contribuinte("86.394.595/0001-22", "Nova Rota Transportes Urbanos S.A."),
             new Contribuinte("58.474.756/0001-52", "gueio meio Urbanos S.A."),
             new Contribuinte("48.085.299/0001-50", "brita japonesaS.A."),
-            new Contribuinte("23.749.494/0001-56", "teste cnpj errado.A."),
-            new Contribuinte("24.413.833/0001-42", "nomecom1233213 errado.A."),
 
 
             };
