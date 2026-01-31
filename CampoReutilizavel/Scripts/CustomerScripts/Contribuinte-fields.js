@@ -1,25 +1,26 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
 
     const input = document.getElementById("txtContribuinte");
-    const dropdown = document.getElementById("dpContribuintes");
 
-    if (!input || !dropdown) return;
+    if (!input) return;
 
-        input.addEventListener("input", function () {
-            this.value = aplicarMascaraCNPJ(this.value);
+    input.addEventListener("input", function () {
+
+        this.value = aplicarMascaraCNPJ(this.value);
+
+        const cnpjLimpo = this.value.replace(/\D/g, "");
+
+        if (this.value.length >= 3) {
             buscarContribuintes(this.value);
-        });
+        }
 
-    dropdown.addEventListener("input", function () {
-        const selecionado = this.options[this.selectedIndex];
-
-        if (selecionado.value) {
-            input.value = aplicarMascaraCNPJ(selecionado.value);
+        if (cnpjLimpo.length === 14) {
+            validarCNPJApi(cnpjLimpo);
         }
     });
-    
 
 });
+
 function aplicarMascaraCNPJ(valor) {
     if (/[a-zA-Z]/.test(valor)) {
         return valor;
@@ -44,52 +45,132 @@ function buscarContribuintes(termo) {
         data: JSON.stringify({ termo: termo }),
         dataType: 'json',
         success: function (r) {
-            const lista = r.d;
-            const sugestoes = document.getElementById("listaSugestoes");
-
-            sugestoes.innerHTML = "";
-
-            if (!lista || lista.length === 0) {
-                sugestoes.style.display = "none";
-                return;
-            }
-
-            lista.forEach(c => {
-                const item = document.createElement("a");
-                item.className = "list-group-item list-group-item-action";
-                item.textContent = `${c.NomeEmpresarial} - ${c.CNPJ}`;
-
-                item.addEventListener("click", function () {
-
-                    const input = document.getElementById("txtContribuinte");
-                    const select = document.getElementById("dpContribuintes");
-
-                    input.value = c.CNPJ;
-
-                    select.innerHTML = "";
-
-                    const option = document.createElement("option");
-                    option.value = c.CNPJ;
-                    option.text = `${c.NomeEmpresarial} - ${c.CNPJ}`;
-                    option.selected = true;
-
-                    select.appendChild(option);
-
-                    sugestoes.innerHTML = "";
-                    sugestoes.style.display = "none";
-                });
-
-
-                sugestoes.appendChild(item);
-            });
-
-            sugestoes.style.display = "block";
+            montarSugestoes(r.d);
         },
-        error: function (xhr) {
-            console.error(xhr.status, xhr.responseText);
+        error: function () {
+            console.log("Erro ao buscar contribuintes.");
         }
     });
 }
 
+function montarSugestoes(lista) {
 
+    const sugestoes = document.getElementById("listaSugestoes");
+    const input = document.getElementById("txtContribuinte");
+    const select = document.getElementById("dpContribuintes");
+
+    sugestoes.innerHTML = "";
+
+    if (!lista || lista.length === 0) {
+        sugestoes.style.display = "none";
+        return;
+    }
+
+    lista.forEach(c => {
+
+        const item = document.createElement("a");
+        item.className = "list-group-item list-group-item-action";
+        item.textContent = c.NomeEmpresarial + " - " + c.CNPJ;
+
+        item.addEventListener("click", function () {
+
+            input.value = c.CNPJ;
+
+            select.innerHTML = "";
+
+            const option = document.createElement("option");
+            option.value = c.CNPJ;
+            option.text = c.NomeEmpresarial + " - " + c.CNPJ;
+            option.selected = true;
+
+            select.appendChild(option);
+
+            sugestoes.innerHTML = "";
+            sugestoes.style.display = "none";
+        });
+
+        sugestoes.appendChild(item);
+    });
+
+    sugestoes.style.display = "block";
+}
+
+function validarCNPJApi(cnpj) {
+
+    fetch(`https://publica.cnpj.ws/cnpj/${cnpj}`)
+        .then(response => {
+            if (!response.ok) {
+
+                if (response.status === 400) {
+                    throw new Error("CNPJ não é válido, tente novamente.");
+                }
+
+                if (response.status === 404) {
+                    throw new Error("CNPJ não encontrado, tente novamente.");
+                }
+                throw new Error("Erro ao consultar a Receita Federal");
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("CNPJ válido:", data);
+
+            verificarCnpjLocal(cnpj);
+        })
+
+        .catch(error => {
+            console.error(error.message);
+            mostrarStatus(false);
+            mostrarMensagem(error.message);
+        });
+}
+
+function mostrarStatus(valido) {
+
+    const input = document.getElementById("txtContribuinte");
+
+    if (valido) {
+        input.classList.remove("is-invalid");
+        input.classList.add("is-valid");
+    } else {
+        input.classList.remove("is-valid");
+        input.classList.add("is-invalid");
+    }
+}
+function mostrarMensagem(texto) {
+    const msg = document.getElementById("mensagemCnpj");
+    msg.innerText = texto;
+    msg.style.display = "block";
+}
+
+function esconderMensagem() {
+    const msg = document.getElementById("mensagemCnpj");
+    msg.style.display = "none";
+}
+
+function verificarCnpjLocal(cnpj) {
+
+    $.ajax({
+        url: '/Services/ContribuinteService.asmx/BuscarContribuinte',
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify({ termo: cnpj }),
+        dataType: 'json',
+        success: function (r) {
+
+            if (!r.d || r.d.length === 0) {
+                mostrarStatus(false);
+                mostrarMensagem("CNPJ não encontrado, tente novamente.");
+                return;
+            }
+
+            mostrarStatus(true);
+            document.getElementById("mensagemCnpj").style.display = "none";
+        },
+        error: function () {
+            mostrarStatus(false);
+            mostrarMensagem("Erro ao consultar base local.");
+        }
+    });
+}
 

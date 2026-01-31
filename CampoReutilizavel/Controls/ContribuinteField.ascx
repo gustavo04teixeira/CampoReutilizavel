@@ -5,6 +5,8 @@
         class="form-control"  ClientIDMode="Static"/>
 
 <div id="listaSugestoes" class="list-group"></div>
+<div id="mensagemCnpj" class="invalid-feedback"></div>
+
 
 <select id="dpContribuintes" class="form-control"> </select>
 

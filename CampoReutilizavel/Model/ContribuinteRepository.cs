@@ -1,6 +1,7 @@
 ﻿using CampoReutilizavel.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -11,16 +12,20 @@ namespace CampoReutilizavel.Model
 
         private static List<Contribuinte> contribuintes = new List<Contribuinte>
             {
-            new Contribuinte("14.672.981/0001-32", "Aurora Tecnologia Digital Ltda."),
-            new Contribuinte("29.845.103/0001-07", "Verde Vale Alimentos Naturais S.A."),
-            new Contribuinte("08.391.774/0001-65", "Atlas Engenharia e Projetos ME"),
-            new Contribuinte("51.207.998/0001-44", "Nexus Soluções Empresariais EPP"),
-            new Contribuinte("36.954.120/0001-18", "BlueWave Marketing e Comunicação Ltda."),
-            new Contribuinte("72.618.405/0001-90", "Horizonte Logística Integrada S.A."),
-            new Contribuinte("19.483.660/0001-53", "Prime Saúde Equipamentos Médicos ME"),
-            new Contribuinte("64.095.211/0001-81", "Solaris Energia Sustentável EPP"),
-            new Contribuinte("47.820.336/0001-26", "Fênix Comércio de Tecnologia Ltda."),
-            new Contribuinte("90.174.558/0001-09", "Nova Rota Transportes Urbanos S.A."),
+            new Contribuinte("13.038.169/0001-82", "Aurora Tecnologia Digital Ltda."),
+            new Contribuinte("16.188.285/0001-76", "Verde Vale Alimentos Naturais S.A."),
+            new Contribuinte("09.148.191/0001-08", "Atlas Engenharia e Projetos ME"),
+            new Contribuinte("57.207.841/0001-91", "Nexus Soluções Empresariais EPP"),
+            new Contribuinte("57.207.841/0001-91", "BlueWave Marketing e Comunicação Ltda."),
+            new Contribuinte("66.100.693/0001-00", "Horizonte Logística Integrada S.A."),
+            new Contribuinte("45.658.346/0001-10", "Prime Saúde Equipamentos Médicos ME"),
+            new Contribuinte("05.122.332/0001-62", "Solaris Energia Sustentável EPP"),
+            new Contribuinte("27.440.154/0001-50", "Fênix Comércio de Tecnologia Ltda."),
+            new Contribuinte("86.394.595/0001-22", "Nova Rota Transportes Urbanos S.A."),
+            new Contribuinte("58.474.756/0001-52", "gueio meio Urbanos S.A."),
+            new Contribuinte("48.085.299/0001-50", "brita japonesaS.A."),
+            new Contribuinte("23.749.494/0001-56", "teste cnpj errado.A."),
+            new Contribuinte("24.413.833/0001-42", "nomecom1233213 errado.A."),
 
 
             };
@@ -32,23 +37,38 @@ namespace CampoReutilizavel.Model
                 return new List<Contribuinte>();
             }
 
-            string termoLimpo = new string(termo.Where(char.IsDigit).ToArray());
-            bool cnpjCompleto = termoLimpo.Length == 14;
+            termo = termo.Trim().ToLower();
 
-            if (cnpjCompleto)
+            
+            string termoLimpo = termo
+                .Replace(".", "")
+                .Replace("/", "")
+                .Replace("-", "");
+
+            
+            if (termoLimpo.Length == 14 && termoLimpo.All(char.IsDigit))
             {
+                
                 return contribuintes
-                    .Where(c =>
-                    new string(c.CNPJ.Where(char.IsDigit).ToArray()) == termoLimpo)
+                    .Where(c => c.CNPJ.Replace(".", "").Replace("/", "").Replace("-", "").Equals(termoLimpo))
+                    .ToList();
+            }
+            else if (termoLimpo.Length == 14 && termoLimpo.All(char.IsLetterOrDigit))
+            {
+               
+                return contribuintes
+                    .Where(c => c.CNPJ.Replace(".", "").Replace("/", "").Replace("-", "").ToLower().Equals(termoLimpo))
                     .ToList();
             }
             else
             {
+               
                 return contribuintes
-                .Where(c =>
-                c.NomeEmpresarial.ToLower().Contains(termo.ToLower()))
-                .ToList();
+                    .Where(c => c.NomeEmpresarial.ToLower().Contains(termo))
+                    .ToList();
             }
         }
+
+
     }
 }
