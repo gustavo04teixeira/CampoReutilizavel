@@ -50,7 +50,8 @@
                 </button>
                 <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Pages/SecondScreen.aspx">Busca Avançada</a></li>
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Pages/AppFiscal.aspx">Área do Fiscal</a></li>
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Pages/AppContador.aspx">Área do Contador</a></li>
                         
                     </ul>
                 </div>

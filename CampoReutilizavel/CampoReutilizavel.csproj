@@ -117,10 +117,12 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Controls\ContribuinteField.ascx" />
+    <Content Include="Controls\ListaCnpjsSelecionados.ascx" />
     <Content Include="Pages\App.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Pages\SecondScreen.aspx" />
+    <Content Include="Pages\AppContador.aspx" />
+    <Content Include="Pages\AppFiscal.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -197,6 +199,13 @@
     <Compile Include="Controls\ContribuinteField.ascx.designer.cs">
       <DependentUpon>ContribuinteField.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ListaCnpjsSelecionados.ascx.cs">
+      <DependentUpon>ListaCnpjsSelecionados.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ListaCnpjsSelecionados.ascx.designer.cs">
+      <DependentUpon>ListaCnpjsSelecionados.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Model\Contribuinte.cs" />
     <Compile Include="Model\ContribuinteRepository.cs" />
     <Compile Include="Pages\App.aspx.cs">
@@ -209,12 +218,19 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Pages\SecondScreen.aspx.cs">
-      <DependentUpon>SecondScreen.aspx</DependentUpon>
+    <Compile Include="Pages\AppContador.aspx.cs">
+      <DependentUpon>AppContador.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Pages\SecondScreen.aspx.designer.cs">
-      <DependentUpon>SecondScreen.aspx</DependentUpon>
+    <Compile Include="Pages\AppContador.aspx.designer.cs">
+      <DependentUpon>AppContador.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\AppFiscal.aspx.cs">
+      <DependentUpon>AppFiscal.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\AppFiscal.aspx.designer.cs">
+      <DependentUpon>AppFiscal.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ContribuinteService.asmx.cs">

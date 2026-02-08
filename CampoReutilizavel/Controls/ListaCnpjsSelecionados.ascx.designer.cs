@@ -7,20 +7,29 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CampoReutilizavel.Pages
+namespace CampoReutilizavel.Controls
 {
 
 
-    public partial class SecondScreen
+    public partial class ListaCnpjsSelecionados
     {
 
         /// <summary>
-        /// ctrlContribuinte control.
+        /// gvExibirCnpjs control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::CampoReutilizavel.Controls.ContribuinteField ctrlContribuinte;
+        protected global::System.Web.UI.WebControls.GridView gvExibirCnpjs;
+
+        /// <summary>
+        /// lbNenhumContribuinteSelecionado control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbNenhumContribuinteSelecionado;
     }
 }

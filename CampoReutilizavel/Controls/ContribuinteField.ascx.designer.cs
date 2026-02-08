@@ -13,5 +13,41 @@ namespace CampoReutilizavel.Controls
 
     public partial class ContribuinteField
     {
+
+        /// <summary>
+        /// txtContribuinte control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtContribuinte;
+
+        /// <summary>
+        /// hfNomeEmpresa control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfNomeEmpresa;
+
+        /// <summary>
+        /// btnAdicionarLista control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAdicionarLista;
+
+        /// <summary>
+        /// lbMensagemCnpjDuplicado control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbMensagemCnpjDuplicado;
     }
 }

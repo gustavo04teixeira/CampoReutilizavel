@@ -16,7 +16,6 @@ namespace CampoReutilizavel.Model
             new Contribuinte("16.188.285/0001-76", "Verde Vale Alimentos Naturais S.A."),
             new Contribuinte("09.148.191/0001-08", "Atlas Engenharia e Projetos ME"),
             new Contribuinte("57.207.841/0001-91", "Nexus Soluções Empresariais EPP"),
-            new Contribuinte("57.207.841/0001-91", "BlueWave Marketing e Comunicação Ltda."),
             new Contribuinte("66.100.693/0001-00", "Horizonte Logística Integrada S.A."),
             new Contribuinte("45.658.346/0001-10", "Prime Saúde Equipamentos Médicos ME"),
             new Contribuinte("05.122.332/0001-62", "Solaris Energia Sustentável EPP"),

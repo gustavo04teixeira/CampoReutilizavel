@@ -8,6 +8,9 @@
 
         this.value = aplicarMascaraCNPJ(this.value);
 
+        const lbDup = document.getElementById("lbMensagemCnpjDuplicado");
+        if (lbDup) lbDup.style.display = "none";
+
         const cnpjLimpo = this.value.replace(/\D/g, "");
 
         if (this.value.length >= 3) {
@@ -16,6 +19,9 @@
 
         if (cnpjLimpo.length === 14) {
             validarCNPJApi(cnpjLimpo);
+        } else {
+            const btn = document.getElementById("btnAdicionarLista");
+            if (btn) btn.disabled = true;
         }
     });
 
@@ -76,6 +82,9 @@ function montarSugestoes(lista) {
 
             input.value = c.CNPJ;
 
+            const hf = document.getElementById("hfNomeEmpresa");
+            if (hf) hf.value = c.NomeEmpresarial;
+
             select.innerHTML = "";
 
             const option = document.createElement("option");
@@ -87,6 +96,12 @@ function montarSugestoes(lista) {
 
             sugestoes.innerHTML = "";
             sugestoes.style.display = "none";
+
+            const btn = document.getElementById("btnAdicionarLista");
+            if (btn) btn.disabled = false;
+
+            const lbDup = document.getElementById("lbMensagemCnpjDuplicado");
+            if (lbDup) lbDup.style.display = "none";
         });
 
         sugestoes.appendChild(item);
@@ -128,13 +143,16 @@ function validarCNPJApi(cnpj) {
 function mostrarStatus(valido) {
 
     const input = document.getElementById("txtContribuinte");
+    const btn = document.getElementById("btnAdicionarLista");
 
     if (valido) {
         input.classList.remove("is-invalid");
         input.classList.add("is-valid");
+        if (btn) btn.disabled = false;
     } else {
         input.classList.remove("is-valid");
         input.classList.add("is-invalid");
+        if (btn) btn.disabled = true;
     }
 }
 function mostrarMensagem(texto) {
@@ -173,4 +191,3 @@ function verificarCnpjLocal(cnpj) {
         }
     });
 }
-
