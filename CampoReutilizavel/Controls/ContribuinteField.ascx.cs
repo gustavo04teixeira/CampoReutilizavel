@@ -45,14 +45,17 @@ namespace CampoReutilizavel.Controls
                 txtContribuinte.Text = "";
                 hfNomeEmpresa.Value = "";
 
-                lbMensagemCnpjDuplicado.Style["display"] = "none";
+                lbMensagemCnpjAdicionado.Style["display"] = "block"; //mensagem de cnpj adicionado
+
+                lbMensagemCnpjDuplicado.Style["display"] = "none"; //mensagem de cnpj duplicado
                 btnAdicionarLista.Enabled = false;
             }
             else
             {
                 txtContribuinte.Text = "";
                 hfNomeEmpresa.Value = "";
-                lbMensagemCnpjDuplicado.Style["display"] = "block";
+                lbMensagemCnpjDuplicado.Style["display"] = "block"; //mensagem de cnpj duplicado
+                lbMensagemCnpjAdicionado.Style["display"] = "none"; //mensagem de cnpj adicionado
                 btnAdicionarLista.Enabled = false;
             }
         }

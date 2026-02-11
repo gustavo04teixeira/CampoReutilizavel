@@ -8,8 +8,14 @@
 
         this.value = aplicarMascaraCNPJ(this.value);
 
-        const lbDup = document.getElementById("lbMensagemCnpjDuplicado");
-        if (lbDup) lbDup.style.display = "none";
+        const lbDuplicado = document.getElementById("lbMensagemCnpjDuplicado");
+        if (lbDuplicado) lbDuplicado.style.display = "none";
+
+        const lbAdicionado = document.getElementById("lbMensagemCnpjAdicionado");
+        if (lbAdicionado) lbAdicionado.style.display = "none";
+
+        const lbExcluido = document.getElementById("lbContribuinteExcluido");
+        if (lbExcluido) lbExcluido.style.display = "none";
 
         const cnpjLimpo = this.value.replace(/\D/g, "");
 
