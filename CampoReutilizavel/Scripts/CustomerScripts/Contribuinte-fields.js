@@ -6,6 +6,11 @@
 
     input.addEventListener("input", function () {
 
+        esconderMensagem();
+
+        this.classList.remove("is-invalid");
+        this.classList.remove("is-valid");
+
         this.value = aplicarMascaraCNPJ(this.value);
 
         const lbDuplicado = document.getElementById("lbMensagemCnpjDuplicado");
@@ -117,6 +122,7 @@ function montarSugestoes(lista) {
 }
 
 function validarCNPJApi(cnpj) {
+    const sugestoes = document.getElementById("listaSugestoes");
 
     fetch(`https://publica.cnpj.ws/cnpj/${cnpj}`)
         .then(response => {
@@ -124,10 +130,12 @@ function validarCNPJApi(cnpj) {
 
                 if (response.status === 400) {
                     throw new Error("CNPJ não é válido, tente novamente.");
+                    sugestoes.style.display = "none";
                 }
 
                 if (response.status === 404) {
                     throw new Error("CNPJ não encontrado, tente novamente.");
+                    sugestoes.style.display = "none";
                 }
                 throw new Error("Erro ao consultar a Receita Federal");
             }
@@ -140,6 +148,7 @@ function validarCNPJApi(cnpj) {
         })
 
         .catch(error => {
+            if (sugestoes) sugestoes.style.display = "none";
             console.error(error.message);
             mostrarStatus(false);
             mostrarMensagem(error.message);
@@ -170,6 +179,7 @@ function mostrarMensagem(texto) {
 function esconderMensagem() {
     const msg = document.getElementById("mensagemCnpj");
     msg.style.display = "none";
+
 }
 
 function verificarCnpjLocal(cnpj) {

@@ -7,9 +7,13 @@ namespace CampoReutilizavel.Models
 {
     public class Contribuinte
     {
-        public string CNPJ;
-        public string NomeEmpresarial;
+        public string CNPJ { get; set; }
+        public string NomeEmpresarial { get; set; }
 
+        public Contribuinte()
+        {
+
+        }
         public Contribuinte(string cnpj, string nomeEmpresarial)
         {
             CNPJ = cnpj;

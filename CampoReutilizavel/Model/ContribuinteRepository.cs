@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 
@@ -9,61 +11,54 @@ namespace CampoReutilizavel.Model
 {
     public class ContribuinteRepository
     {
-
-        private static List<Contribuinte> contribuintes = new List<Contribuinte>
-            {
-            new Contribuinte("13.038.169/0001-82", "Aurora Tecnologia Digital Ltda."),
-            new Contribuinte("16.188.285/0001-76", "Verde Vale Alimentos Naturais S.A."),
-            new Contribuinte("09.148.191/0001-08", "Atlas Engenharia e Projetos ME"),
-            new Contribuinte("57.207.841/0001-91", "Nexus Soluções Empresariais EPP"),
-            new Contribuinte("66.100.693/0001-00", "Horizonte Logística Integrada S.A."),
-            new Contribuinte("45.658.346/0001-10", "Prime Saúde Equipamentos Médicos ME"),
-            new Contribuinte("05.122.332/0001-62", "Solaris Energia Sustentável EPP"),
-            new Contribuinte("27.440.154/0001-50", "Fênix Comércio de Tecnologia Ltda."),
-            new Contribuinte("86.394.595/0001-22", "Nova Rota Transportes Urbanos S.A."),
-            new Contribuinte("58.474.756/0001-52", "gueio meio Urbanos S.A."),
-            new Contribuinte("48.085.299/0001-50", "brita japonesaS.A."),
-
-
-            };
-
         public static List<Contribuinte> buscar(string termo)
         {
-            if (string.IsNullOrWhiteSpace(termo))
-            {
-                return new List<Contribuinte>();
-            }
+            List<Contribuinte> resultados = new List<Contribuinte>();
+            if (string.IsNullOrWhiteSpace(termo)) return resultados;
 
-            termo = termo.Trim().ToLower();
+            string constr = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
 
-            
-            string termoLimpo = termo
-                .Replace(".", "")
-                .Replace("/", "")
-                .Replace("-", "");
+            termo = termo.Trim().ToLower(); 
 
-            
-            if (termoLimpo.Length == 14 && termoLimpo.All(char.IsDigit))
+            string termoLimpo = termo.Replace(".", "").Replace("/", "").Replace("-", "");
+
+            using (SqlConnection con = new SqlConnection(constr))
             {
-                
-                return contribuintes
-                    .Where(c => c.CNPJ.Replace(".", "").Replace("/", "").Replace("-", "").Equals(termoLimpo))
-                    .ToList();
+                string sql = "";
+
+                if (termoLimpo.Length == 14 && termoLimpo.All(char.IsDigit))
+                {
+                    sql = @"SELECT CNPJ, NomeEmpresarial FROM Contribuintes 
+                    WHERE REPLACE(REPLACE(REPLACE(CNPJ, '.', ''), '/', ''), '-', '') = @termoLimpo";
+                }
+                else if (termoLimpo.Length == 14 && termoLimpo.All(char.IsLetterOrDigit))
+                {
+                    sql = @"SELECT CNPJ, NomeEmpresarial FROM Contribuintes 
+                    WHERE LOWER(REPLACE(REPLACE(REPLACE(CNPJ, '.', ''), '/', ''), '-', '')) = @termoLimpo";
+                }
+                else
+                {
+                    sql = @"SELECT CNPJ, NomeEmpresarial FROM Contribuintes 
+                    WHERE NomeEmpresarial LIKE '%' + @termo + '%'";
+                }
+
+                SqlCommand cmd = new SqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("@termo", termo);
+                cmd.Parameters.AddWithValue("@termoLimpo", termoLimpo);
+
+                con.Open();
+                using (SqlDataReader rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        resultados.Add(new Contribuinte(
+                            rdr["CNPJ"].ToString(),
+                            rdr["NomeEmpresarial"].ToString()
+                        ));
+                    }
+                }
             }
-            else if (termoLimpo.Length == 14 && termoLimpo.All(char.IsLetterOrDigit))
-            {
-               
-                return contribuintes
-                    .Where(c => c.CNPJ.Replace(".", "").Replace("/", "").Replace("-", "").ToLower().Equals(termoLimpo))
-                    .ToList();
-            }
-            else
-            {
-               
-                return contribuintes
-                    .Where(c => c.NomeEmpresarial.ToLower().Contains(termo))
-                    .ToList();
-            }
+            return resultados;
         }
 
 
