@@ -1,4 +1,5 @@
-﻿using CampoReutilizavel.Models;
+﻿using CampoReutilizavel.Model;
+using CampoReutilizavel.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -59,7 +60,7 @@ namespace CampoReutilizavel.Controls
                 btnAdicionarLista.Enabled = false;
             }
         }
-
     }
+
 }
 

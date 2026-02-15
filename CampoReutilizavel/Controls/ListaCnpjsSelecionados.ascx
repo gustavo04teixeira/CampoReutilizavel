@@ -48,7 +48,14 @@
         <asp:Label ID="lbNenhumContribuinteSelecionado" ClientIDMode="Static" runat="server" Text="Nenhum Contribunte Selecionado" Visible="False"></asp:Label>
         <asp:Label ID="lbContribuinteExcluido" ClientIDMode="Static" runat="server" Text="Contribuinte Removido Com Sucesso!" Style= "display: none;"></asp:Label>
 
-        
+        <div class="d-flex gap-3 mt-3">
+
+        <asp:Button ID="btnExportarXml" runat="server" Text="Exportar Arquivo XML" CssClass="btn btn-outline-dark" OnClick="btnExportarXml_Click"/>
+        <asp:Button ID="btnExportarJson" runat="server" Text="Exportar Arquivo JSON" CssClass="btn btn-outline-primary" OnClick="btnExportarJson_Click" />
+
+        </div>
    </div>
+
+
 
 <script src="/Scripts/CustomerScripts/Contribuinte-fields.js"></script>

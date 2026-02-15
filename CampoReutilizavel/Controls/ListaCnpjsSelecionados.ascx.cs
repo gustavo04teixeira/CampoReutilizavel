@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Xml.Serialization;
 
 namespace CampoReutilizavel.Controls
 {
@@ -93,6 +96,58 @@ namespace CampoReutilizavel.Controls
             ViewState["SortDirection"] = direcao;
 
             return direcao;
+        }
+
+        public class ContribuinteExport
+        {
+            public string CNPJ { get; set; }
+            public string NomeEmpresarial { get; set; }
+        }
+        protected void btnExportarJson_Click(object sender, EventArgs e)
+        {
+            var lista = ObterDadosDoGrid();
+            var json = new JavaScriptSerializer().Serialize(lista);
+
+            BaixarArquivo(json, "contribuintes_exportados.json", "application/json");
+        }
+
+        protected void btnExportarXml_Click(object sender, EventArgs e)
+        {
+            var lista = ObterDadosDoGrid();
+
+            XmlSerializer serializer = new XmlSerializer(typeof(List<ContribuinteExport>));
+            using (StringWriter sw = new StringWriter())
+            {
+                serializer.Serialize(sw, lista);
+                BaixarArquivo(sw.ToString(), "contribuintes_exportados.xml", "text/xml");
+            }
+        }
+
+        private List<ContribuinteExport> ObterDadosDoGrid()
+        {
+            List<ContribuinteExport> lista = new List<ContribuinteExport>();
+
+            foreach (GridViewRow row in gvExibirCnpjs.Rows)
+            {
+                lista.Add(new ContribuinteExport
+                {
+                    CNPJ = row.Cells[1].Text,
+                    NomeEmpresarial = row.Cells[2].Text
+                });
+            }
+            return lista;
+        }
+
+        private void BaixarArquivo(string conteudo, string nomeArquivo, string tipoConteudo)
+        {
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment;filename=" + nomeArquivo);
+            Response.Charset = "";
+            Response.ContentType = tipoConteudo;
+            Response.Output.Write(conteudo);
+            Response.Flush();
+            Response.End();
         }
     }
 }

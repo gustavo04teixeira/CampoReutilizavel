@@ -22,15 +22,23 @@
         const lbExcluido = document.getElementById("lbContribuinteExcluido");
         if (lbExcluido) lbExcluido.style.display = "none";
 
-        const cnpjLimpo = this.value.replace(/\D/g, "");
+        const cnpjAlphanumericoLimpo = this.value.replace(/[^a-zA-Z0-9]/g, "");
 
-        if (this.value.length >= 3) {
+        const sugestoes = document.getElementById("listaSugestoes");
+
+        if (cnpjAlphanumericoLimpo.length === 14)
+        {
+            validarCNPJApi(cnpjAlphanumericoLimpo);
+        } else if (cnpjAlphanumericoLimpo.length >= 3)
+        {
             buscarContribuintes(this.value);
         }
-
-        if (cnpjLimpo.length === 14) {
-            validarCNPJApi(cnpjLimpo);
-        } else {
+        else
+        {
+            if (sugestoes) {
+                sugestoes.innerHTML = "";
+                sugestoes.style.display = "none";
+            }
             const btn = document.getElementById("btnAdicionarLista");
             if (btn) btn.disabled = true;
         }
@@ -61,8 +69,15 @@ function buscarContribuintes(termo) {
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify({ termo: termo }),
         dataType: 'json',
-        success: function (r) {
-            montarSugestoes(r.d);
+        success: async function (r) {
+            //montarSugestoes(r.d);
+            if (r.d && r.d.length > 0) {
+                // Filtra a lista: só mantém quem a API validar
+                const listaValidada = await filtrarApenasCnpjsValidos(r.d);
+                montarSugestoes(listaValidada);
+            } else {
+                montarSugestoes([]);
+            }
         },
         error: function () {
             console.log("Erro ao buscar contribuintes.");
@@ -127,28 +142,51 @@ function validarCNPJApi(cnpj) {
     fetch(`https://publica.cnpj.ws/cnpj/${cnpj}`)
         .then(response => {
             if (!response.ok) {
-
-                if (response.status === 400) {
-                    throw new Error("CNPJ não é válido, tente novamente.");
+                
+                if (sugestoes) {
+                    sugestoes.innerHTML = "";
                     sugestoes.style.display = "none";
                 }
 
-                if (response.status === 404) {
-                    throw new Error("CNPJ não encontrado, tente novamente.");
-                    sugestoes.style.display = "none";
-                }
-                throw new Error("Erro ao consultar a Receita Federal");
+                if (response.status === 400) throw new Error("CNPJ não é válido, tente novamente.");
+                if (response.status === 404) throw new Error("CNPJ não encontrado, tente novamente.");
+                throw new Error("Erro ao consultar a Receita Federal.");
             }
             return response.json();
         })
         .then(data => {
-            console.log("CNPJ válido:", data);
-
-            verificarCnpjLocal(cnpj);
+            $.ajax({
+                url: '/Services/ContribuinteService.asmx/BuscarContribuinte',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({ termo: cnpj }), // busca o CNPJ específico
+                dataType: 'json',
+                success: function (r) {
+                    
+                    if (r.d && r.d.length > 0) {
+                        montarSugestoes(r.d); // SÓ MOSTRA A LISTA AGORA
+                        mostrarStatus(true);
+                        esconderMensagem();
+                    } else {
+                        if (sugestoes) {
+                            sugestoes.innerHTML = "";
+                            sugestoes.style.display = "none";
+                        }
+                        mostrarStatus(false);
+                        mostrarMensagem("CNPJ oficial, mas não cadastrado no banco local.");
+                    }
+                },
+                error: function () {
+                    mostrarStatus(false);
+                    mostrarMensagem("Erro ao conectar com o banco local.");
+                }
+            });
         })
-
         .catch(error => {
-            if (sugestoes) sugestoes.style.display = "none";
+            if (sugestoes) {
+                sugestoes.innerHTML = "";
+                sugestoes.style.display = "none";
+            }
             console.error(error.message);
             mostrarStatus(false);
             mostrarMensagem(error.message);
@@ -206,4 +244,59 @@ function verificarCnpjLocal(cnpj) {
             mostrarMensagem("Erro ao consultar base local.");
         }
     });
+}
+
+function importarArquivo() {
+    const fileInput = document.getElementById('fileXml');
+    const msg = document.getElementById('msgXml');
+
+    if (fileInput.files.length === 0) {
+        alert("Selecione um arquivo primeiro!");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const extensao = file.name.substring(file.name.lastIndexOf(''));
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const base64 = e.target.result.split(',')[1]; 
+
+        $.ajax({
+            url: '/Services/ContribuinteService.asmx/UploadArquivo',
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({ base64Xml: base64, extensao: extensao }),
+            success: function (r) {
+                msg.innerText = r.d;
+                msg.className = "alert alert-success";
+                msg.style.display = "block";
+                fileInput.value = "";
+            },
+            error: function () {
+                msg.innerText = "Erro ao processar arquivo.";
+                msg.className = "alert alert-danger";
+                msg.style.display = "block";
+            }
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
+async function filtrarApenasCnpjsValidos(listaOriginal) {
+
+    const promessas = listaOriginal.map(async (contribuinte) => {
+        try {
+
+            const cnpjLimpo = contribuinte.CNPJ.replace(/[^0-9a-zA-Z]/g, "");
+            const response = await fetch(`https://publica.cnpj.ws/cnpj/${cnpjLimpo}`);
+
+            return response.ok ? contribuinte : null;
+        } catch (e) {
+            return null; 
+        }
+    });
+
+    const resultados = await Promise.all(promessas);
+    return resultados.filter(c => c !== null);
 }

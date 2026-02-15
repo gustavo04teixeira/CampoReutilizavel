@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CampoReutilizavel.Model;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.EnterpriseServices;
@@ -15,7 +16,30 @@ namespace CampoReutilizavel.Pages
         {
            
         }
-         
-        
+
+        protected void btnSubir_Click(object sender, EventArgs e)
+        {
+            if (flSubirXml.HasFile)
+            {
+                try
+                {
+                    string extensao = System.IO.Path.GetExtension(flSubirXml.FileName);
+                    ContribuinteRepository.ImportarDadosArquivo(flSubirXml.FileContent, extensao);
+
+                    lblMensagem.Text = "Importação realizada com sucesso!";
+                    lblMensagem.ForeColor = System.Drawing.Color.Green;
+                }
+                catch (Exception ex)
+                {
+                    lblMensagem.Text = "Erro ao importar: " + ex.Message;
+                    lblMensagem.ForeColor = System.Drawing.Color.Red;
+                }
+            }
+            else
+            {
+                lblMensagem.Text = "Por favor, selecione um arquivo XML ou JSON";
+                lblMensagem.ForeColor = System.Drawing.Color.Orange;
+            }
+        }
     }
 }

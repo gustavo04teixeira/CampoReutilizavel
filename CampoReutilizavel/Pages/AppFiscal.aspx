@@ -9,6 +9,14 @@
                 <div class="card">
                 
                 <uc:ListaCnpjsSelecionados ID="ctrlListaCnpjsSelecionados" runat="server" />
+                    <br />
+                    <br />
+                    <asp:FileUpload ID="flSubirXml" runat="server" accept=".xml,.json"/>
+                    <br />
+                    <br />
+                    <asp:Button ID="btnSubir" runat="server" OnClick="btnSubir_Click" Text="Subir" />
+                    <br />
+                    <asp:Label ID="lblMensagem" runat="server" Text=""></asp:Label>
             </section>
         </div>
     </main>
