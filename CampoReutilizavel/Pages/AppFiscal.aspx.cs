@@ -19,12 +19,12 @@ namespace CampoReutilizavel.Pages
 
         protected void btnSubir_Click(object sender, EventArgs e)
         {
-            if (flSubirXml.HasFile)
+            if (flSubirArquivo.HasFile)
             {
                 try
                 {
-                    string extensao = System.IO.Path.GetExtension(flSubirXml.FileName);
-                    ContribuinteRepository.ImportarDadosArquivo(flSubirXml.FileContent, extensao);
+                    string extensao = System.IO.Path.GetExtension(flSubirArquivo.FileName);
+                    ContribuinteRepository.ImportarDadosArquivo(flSubirArquivo.FileContent, extensao);
 
                     lblMensagem.Text = "Importação realizada com sucesso!";
                     lblMensagem.ForeColor = System.Drawing.Color.Green;

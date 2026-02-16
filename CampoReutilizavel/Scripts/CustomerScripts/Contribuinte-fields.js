@@ -70,9 +70,8 @@ function buscarContribuintes(termo) {
         data: JSON.stringify({ termo: termo }),
         dataType: 'json',
         success: async function (r) {
-            //montarSugestoes(r.d);
+
             if (r.d && r.d.length > 0) {
-                // Filtra a lista: só mantém quem a API validar
                 const listaValidada = await filtrarApenasCnpjsValidos(r.d);
                 montarSugestoes(listaValidada);
             } else {

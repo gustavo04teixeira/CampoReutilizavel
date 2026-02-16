@@ -24,13 +24,13 @@ namespace CampoReutilizavel.Pages
         protected global::CampoReutilizavel.Controls.ListaCnpjsSelecionados ctrlListaCnpjsSelecionados;
 
         /// <summary>
-        /// flSubirXml control.
+        /// flSubirArquivo control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload flSubirXml;
+        protected global::System.Web.UI.WebControls.FileUpload flSubirArquivo;
 
         /// <summary>
         /// btnSubir control.
