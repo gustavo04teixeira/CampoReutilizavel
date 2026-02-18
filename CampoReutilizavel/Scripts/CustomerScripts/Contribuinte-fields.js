@@ -13,6 +13,8 @@
 
         this.value = aplicarMascaraCNPJ(this.value);
 
+        //Mensagens de erro
+
         const lbDuplicado = document.getElementById("lbMensagemCnpjDuplicado");
         if (lbDuplicado) lbDuplicado.style.display = "none";
 
@@ -138,7 +140,7 @@ function montarSugestoes(lista) {
 function validarCNPJApi(cnpj) {
     const sugestoes = document.getElementById("listaSugestoes");
 
-    fetch(`https://publica.cnpj.ws/cnpj/${cnpj}`)
+    fetch(`/api/cnpj/${cnpj}`)
         .then(response => {
             if (!response.ok) {
                 
@@ -219,32 +221,6 @@ function esconderMensagem() {
 
 }
 
-function verificarCnpjLocal(cnpj) {
-
-    $.ajax({
-        url: '/Services/ContribuinteService.asmx/BuscarContribuinte',
-        type: 'POST',
-        contentType: 'application/json; charset=utf-8',
-        data: JSON.stringify({ termo: cnpj }),
-        dataType: 'json',
-        success: function (r) {
-
-            if (!r.d || r.d.length === 0) {
-                mostrarStatus(false);
-                mostrarMensagem("CNPJ não encontrado, tente novamente.");
-                return;
-            }
-
-            mostrarStatus(true);
-            document.getElementById("mensagemCnpj").style.display = "none";
-        },
-        error: function () {
-            mostrarStatus(false);
-            mostrarMensagem("Erro ao consultar base local.");
-        }
-    });
-}
-
 function importarArquivo() {
     const fileInput = document.getElementById('fileXml');
     const msg = document.getElementById('msgXml');
@@ -288,7 +264,7 @@ async function filtrarApenasCnpjsValidos(listaOriginal) {
         try {
 
             const cnpjLimpo = contribuinte.CNPJ.replace(/[^0-9a-zA-Z]/g, "");
-            const response = await fetch(`https://publica.cnpj.ws/cnpj/${cnpjLimpo}`);
+            const response = await fetch(`/api/cnpj/${cnpjLimpo}`);
 
             return response.ok ? contribuinte : null;
         } catch (e) {

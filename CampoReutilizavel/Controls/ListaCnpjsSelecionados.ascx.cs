@@ -106,7 +106,13 @@ namespace CampoReutilizavel.Controls
         protected void btnExportarJson_Click(object sender, EventArgs e)
         {
             var lista = ObterDadosDoGrid();
-            var json = new JavaScriptSerializer().Serialize(lista);
+
+            var estruturaComNome = new
+            {
+                Contribuintes = lista
+            };
+
+            var json = new JavaScriptSerializer().Serialize(estruturaComNome);
 
             BaixarArquivo(json, "contribuintes_exportados.json", "application/json");
         }

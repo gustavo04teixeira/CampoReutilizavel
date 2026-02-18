@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CampoReutilizavel.App_Start;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,6 +14,8 @@ namespace CampoReutilizavel
     {
         void Application_Start(object sender, EventArgs e)
         {
+            System.Web.Http.GlobalConfiguration.Configure(WebApiConfig.Register);
+
             // Code that runs on application startup
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
