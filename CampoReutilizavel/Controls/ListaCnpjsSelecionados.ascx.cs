@@ -13,33 +13,51 @@ namespace CampoReutilizavel.Controls
 {
     public partial class ListaCnpjsSelecionados : System.Web.UI.UserControl
     {
+        public string ModoArmazenamento
+        {
+            get { return ViewState["ModoArmazenamento"]?.ToString() ?? "Session"; }
+            set { ViewState["ModoArmazenamento"] = value; }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
+
             if (!IsPostBack)
             {
-                CarregarGrid();
+                AtualizarInterface();
             }
-
-            DataTable dt = (DataTable)Session["ContribuintesSelecionados"];
-
-            if (dt == null ||dt.Rows.Count == 0)
-            {
-                lbNenhumContribuinteSelecionado.Visible = true;
-            }
-            else
-            {
-                lbNenhumContribuinteSelecionado.Visible = false;
-            }
+            
         }
-        private void CarregarGrid()
+
+        protected DataTable ObterDados()
+            {
+            if (ModoArmazenamento == "Session")
+                return (DataTable)Session["ContribuintesSelecionados"];
+            else
+                return (DataTable)ViewState["ContribuintesSelecionados"];
+        }
+
+        protected void SalvarDados(DataTable dt)
         {
-            DataTable dt = (DataTable)Session["ContribuintesSelecionados"];
+            if (ModoArmazenamento == "Session")
+                Session["ContribuintesSelecionados"] = dt;
+            else
+                ViewState["ContribuintesSelecionados"] = dt;
+        }
+
+        protected void AtualizarInterface()
+        {
+            DataTable dt = ObterDados();
             if (dt != null)
             {
                 gvExibirCnpjs.DataSource = dt;
                 gvExibirCnpjs.DataBind();
             }
+
+            lbNenhumContribuinteSelecionado.Visible = (dt == null || dt.Rows.Count == 0);
         }
+
+
+        //Eventos do gridView
 
         protected void gvExibirCnpjs_RowCommand(object sender, GridViewCommandEventArgs e)
         {
@@ -54,11 +72,10 @@ namespace CampoReutilizavel.Controls
                     if (dt != null && dt.Rows.Count > index)
                     {
                         dt.Rows.RemoveAt(index);
-                        Session["ContribuintesSelecionados"] = dt;
+                        SalvarDados(dt);
 
-                        CarregarGrid();
+                        AtualizarInterface();
 
-                        lbNenhumContribuinteSelecionado.Visible = (dt.Rows.Count == 0);
                         lbContribuinteExcluido.Style["display"] = "block";
                     }
                 }
@@ -75,9 +92,8 @@ namespace CampoReutilizavel.Controls
                 string direcao = GetSortDirection(e.SortExpression);
                 dv.Sort = e.SortExpression + " " + direcao;
 
-                CarregarGrid();
-
-                Session["ContribuintesSelecionados"] = dv.ToTable();
+                SalvarDados(dv.ToTable());
+                AtualizarInterface();
             }
         }
 
@@ -107,12 +123,7 @@ namespace CampoReutilizavel.Controls
         {
             var lista = ObterDadosDoGrid();
 
-            var estruturaComNome = new
-            {
-                Contribuintes = lista
-            };
-
-            var json = new JavaScriptSerializer().Serialize(estruturaComNome);
+            var json = new JavaScriptSerializer().Serialize(lista);
 
             BaixarArquivo(json, "contribuintes_exportados.json", "application/json");
         }

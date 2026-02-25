@@ -1,4 +1,6 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿const cacheCnpjsValidados = new Set();
+
+document.addEventListener("DOMContentLoaded", function () {
 
     const input = document.getElementById("txtContribuinte");
 
@@ -41,8 +43,11 @@
                 sugestoes.innerHTML = "";
                 sugestoes.style.display = "none";
             }
-            const btn = document.getElementById("btnAdicionarLista");
-            if (btn) btn.disabled = true;
+            const bt1 = document.getElementById("btnAdicionarLista");
+            if (bt1) bt1.disabled = true;
+
+            const bt2 = document.getElementById("btnAdicionarListaVS");
+            if (bt2) bt2.disabled = true;
         }
     });
 
@@ -124,8 +129,11 @@ function montarSugestoes(lista) {
             sugestoes.innerHTML = "";
             sugestoes.style.display = "none";
 
-            const btn = document.getElementById("btnAdicionarLista");
-            if (btn) btn.disabled = false;
+            const bt1 = document.getElementById("btnAdicionarLista");
+            const bt2 = document.getElementById("btnAdicionarListaVS");
+
+            if (bt1) bt1.disabled = false;
+            if (bt2) bt2.disabled = false;
 
             const lbDup = document.getElementById("lbMensagemCnpjDuplicado");
             if (lbDup) lbDup.style.display = "none";
@@ -136,77 +144,100 @@ function montarSugestoes(lista) {
 
     sugestoes.style.display = "block";
 }
+function getCookie(name) {
+    let nameEQ = name + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
 
 function validarCNPJApi(cnpj) {
     const sugestoes = document.getElementById("listaSugestoes");
 
+    const cookiesValidados = getCookie("CnpjsValidados");
+    if (cookiesValidados && cookiesValidados.split(',').includes(cnpj)) {
+        console.log("✅ CNPJ validado via Cookie Permanente (7 dias):", cnpj);
+        buscarNoBancoLocal(cnpj);
+        return;
+    }
+
     fetch(`/api/cnpj/${cnpj}`)
         .then(response => {
             if (!response.ok) {
-                
                 if (sugestoes) {
                     sugestoes.innerHTML = "";
                     sugestoes.style.display = "none";
                 }
-
-                if (response.status === 400) throw new Error("CNPJ não é válido, tente novamente.");
-                if (response.status === 404) throw new Error("CNPJ não encontrado, tente novamente.");
+                if (response.status === 400) throw new Error("CNPJ não é válido.");
+                if (response.status === 404) throw new Error("CNPJ não encontrado na Receita.");
                 throw new Error("Erro ao consultar a Receita Federal.");
             }
             return response.json();
         })
-        .then(data => {
-            $.ajax({
-                url: '/Services/ContribuinteService.asmx/BuscarContribuinte',
-                type: 'POST',
-                contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify({ termo: cnpj }), // busca o CNPJ específico
-                dataType: 'json',
-                success: function (r) {
-                    
-                    if (r.d && r.d.length > 0) {
-                        montarSugestoes(r.d); // SÓ MOSTRA A LISTA AGORA
-                        mostrarStatus(true);
-                        esconderMensagem();
-                    } else {
-                        if (sugestoes) {
-                            sugestoes.innerHTML = "";
-                            sugestoes.style.display = "none";
-                        }
-                        mostrarStatus(false);
-                        mostrarMensagem("CNPJ oficial, mas não cadastrado no banco local.");
-                    }
-                },
-                error: function () {
-                    mostrarStatus(false);
-                    mostrarMensagem("Erro ao conectar com o banco local.");
-                }
-            });
+        .then(data => { 
+
+            buscarNoBancoLocal(cnpj);
         })
         .catch(error => {
+            console.error(error.message);
             if (sugestoes) {
                 sugestoes.innerHTML = "";
                 sugestoes.style.display = "none";
             }
-            console.error(error.message);
             mostrarStatus(false);
             mostrarMensagem(error.message);
         });
+}
+function buscarNoBancoLocal(cnpj) {
+    const sugestoes = document.getElementById("listaSugestoes");
+
+    $.ajax({
+        url: '/Services/ContribuinteService.asmx/BuscarContribuinte',
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify({ termo: cnpj }),
+        dataType: 'json',
+        success: function (r) {
+            if (r.d && r.d.length > 0) {
+                montarSugestoes(r.d);
+                mostrarStatus(true);
+                esconderMensagem();
+            } else {
+                if (sugestoes) {
+                    sugestoes.innerHTML = "";
+                    sugestoes.style.display = "none";
+                }
+                mostrarStatus(false);
+                mostrarMensagem("CNPJ oficial, mas não cadastrado no banco local.");
+            }
+        },
+        error: function () {
+            mostrarStatus(false);
+            mostrarMensagem("Erro ao conectar com o banco local.");
+        }
+    });
 }
 
 function mostrarStatus(valido) {
 
     const input = document.getElementById("txtContribuinte");
-    const btn = document.getElementById("btnAdicionarLista");
+    const bt1 = document.getElementById("btnAdicionarLista");
+    const bt2 = document.getElementById("btnAdicionarListaVS");
 
     if (valido) {
         input.classList.remove("is-invalid");
         input.classList.add("is-valid");
-        if (btn) btn.disabled = false;
+        if (bt1) bt1.disabled = false;
+        if (bt2) bt2.disabled = false;
     } else {
         input.classList.remove("is-valid");
         input.classList.add("is-invalid");
-        if (btn) btn.disabled = true;
+        if (bt1) bt1.disabled = true;
+        if (bt2) bt2.disabled = true;
     }
 }
 function mostrarMensagem(texto) {
@@ -221,6 +252,7 @@ function esconderMensagem() {
 
 }
 
+/*
 function importarArquivo() {
     const fileInput = document.getElementById('fileXml');
     const msg = document.getElementById('msgXml');
@@ -256,7 +288,7 @@ function importarArquivo() {
         });
     };
     reader.readAsDataURL(file);
-}
+}*/
 
 async function filtrarApenasCnpjsValidos(listaOriginal) {
 

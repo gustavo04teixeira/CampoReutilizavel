@@ -26,23 +26,5 @@ namespace CampoReutilizavel.Services
         {
             return CampoReutilizavel.Model.ContribuinteRepository.buscar(termo);
         }
-
-        [WebMethod]
-        public string UploadArquivo(string base64Xml, string extensao)
-        {
-            try
-            {
-                byte[] arquivoBytes = Convert.FromBase64String(base64Xml);
-                using (MemoryStream ms = new MemoryStream(arquivoBytes))
-                {
-                    ContribuinteRepository.ImportarDadosArquivo(ms, extensao);
-                }
-                return "Arquivo " + extensao +" importado com sucesso!";
-            }
-            catch (Exception ex)
-            {
-                return "Erro ao importar: " + ex.Message;
-            }
-        }
     }
 }

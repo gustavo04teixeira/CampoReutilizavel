@@ -259,7 +259,6 @@
     </Compile>
     <Compile Include="Pages\AppFiscal.aspx.cs">
       <DependentUpon>AppFiscal.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Pages\AppFiscal.aspx.designer.cs">
       <DependentUpon>AppFiscal.aspx</DependentUpon>

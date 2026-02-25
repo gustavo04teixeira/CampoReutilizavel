@@ -66,53 +66,6 @@ namespace CampoReutilizavel.Model
             return resultados;
         }
 
-        public static void ImportarDadosArquivo(Stream streamArquivo, string extensao)
-        {
-            if (extensao.ToLower() == ".xml")
-            {
-                DataSet ds = new DataSet();
-                ds.ReadXml(streamArquivo);
-                if (ds.Tables.Count > 0)
-                {
-                    ProcessarTabela(ds.Tables[0]);
-                }
-            }
-            else if (extensao.ToLower() == ".json")
-            {
-                using (StreamReader reader = new StreamReader(streamArquivo))
-                {
-                    string json = reader.ReadToEnd();
-                    var serializer = new JavaScriptSerializer();
-                    var lista = serializer.Deserialize<List<Dictionary<string, string>>>(json);
-                    ProcessarListaDicionario(lista);
-                }
-            }
-        }
-
-        private static void ProcessarTabela(DataTable dt)
-        {
-            using (SqlConnection con = new SqlConnection(GetConnectionString()))
-            {
-                con.Open();
-                foreach (DataRow linha in dt.Rows)
-                {
-                    ExecutarInsert(linha["CNPJ"].ToString(), linha["NomeEmpresarial"].ToString(), con);
-                }
-            }
-        }
-
-        private static void ProcessarListaDicionario(List<Dictionary<string, string>> lista)
-        {
-            using (SqlConnection con = new SqlConnection(GetConnectionString()))
-            {
-                con.Open();
-                foreach (var item in lista)
-                {
-                    ExecutarInsert(item["CNPJ"], item["NomeEmpresarial"], con);
-                }
-            }
-        }
-
         private static void ExecutarInsert(string cnpj, string nome, SqlConnection con)
         {
             string sql = @"IF NOT EXISTS (SELECT 1 FROM Contribuintes WHERE CNPJ = @cnpj)
@@ -123,6 +76,64 @@ namespace CampoReutilizavel.Model
                 cmd.Parameters.AddWithValue("@cnpj", cnpj);
                 cmd.Parameters.AddWithValue("@nome", nome);
                 cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static List<Contribuinte> LerListaCnpjsDoArquivo(Stream streamArquivo, string extensao)
+        {
+            List<Contribuinte> lista = new List<Contribuinte>();
+
+            if (extensao.ToLower() == ".xml")
+            {
+                DataSet ds = new DataSet();
+                ds.ReadXml(streamArquivo);
+                if (ds.Tables.Count > 0)
+                {
+                    foreach (DataRow linha in ds.Tables[0].Rows)
+                    {
+                        lista.Add(new Contribuinte(
+                            linha["CNPJ"].ToString(),
+                            linha["NomeEmpresarial"].ToString()
+                        ));
+                    }
+                }
+            }
+            else if (extensao.ToLower() == ".json")
+            {
+                using (StreamReader reader = new StreamReader(streamArquivo))
+                {
+                    string json = reader.ReadToEnd();
+                    var serializer = new JavaScriptSerializer();
+
+                    var dados = serializer.Deserialize<List<Dictionary<string, string>>>(json);
+                    foreach (var item in dados)
+                    {
+                        lista.Add(new Contribuinte(item["CNPJ"], item["NomeEmpresarial"]));
+                    }
+                }
+            }
+            return lista;
+        }
+        public static bool SalvarIndividual(string cnpj, string nome)
+        {
+
+            string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                string sql = @"IF NOT EXISTS(SELECT 1 FROM Contribuintes WHERE CNPJ = @cnpj)
+                                 INSERT INTO Contribuintes (CNPJ, NomeEmpresarial) VALUES (@cnpj, @nome)";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@cnpj", cnpj);
+                    cmd.Parameters.AddWithValue("@nome", nome);
+
+                    conn.Open();
+                    int linhasAfetadas = cmd.ExecuteNonQuery();
+
+                    return linhasAfetadas > 0;
+                }
             }
         }
     }

@@ -35,7 +35,7 @@ namespace CampoReutilizavel.Controllers
 
                     return Ok(new JavaScriptSerializer().DeserializeObject(json));
                 }
-                return NotFound();
+                return NotFound(); //erro 404
             }
             catch (Exception ex)
             {

@@ -7,11 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CampoReutilizavel
+namespace CampoReutilizavel.Pages
 {
 
 
-    public partial class _Default
+    public partial class AppContador
     {
 
         /// <summary>
@@ -22,5 +22,41 @@ namespace CampoReutilizavel
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::CampoReutilizavel.Controls.ListaCnpjsSelecionados ctrlListaCnpjsSelecionados;
+
+        /// <summary>
+        /// txtCnpj control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtCnpj;
+
+        /// <summary>
+        /// txtNomeEmpresarial control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtNomeEmpresarial;
+
+        /// <summary>
+        /// btnAdicionarContribuinte control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAdicionarContribuinte;
+
+        /// <summary>
+        /// lblMensagem control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMensagem;
     }
 }

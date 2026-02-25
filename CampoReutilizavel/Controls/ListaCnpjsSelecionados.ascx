@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ListaCnpjsSelecionados.ascx.cs" Inherits="CampoReutilizavel.Controls.ListaCnpjsSelecionados" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ListaCnpjsSelecionados.ascx.cs" Inherits="CampoReutilizavel.Controls.ListaCnpjsSelecionados"%>
 <style>
     #gvExibirCnpjs th a {
         color: #333 !important;

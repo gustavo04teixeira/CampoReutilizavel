@@ -42,6 +42,15 @@ namespace CampoReutilizavel.Controls
         protected global::System.Web.UI.WebControls.Button btnAdicionarLista;
 
         /// <summary>
+        /// btnAdicionarListaVS control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAdicionarListaVS;
+
+        /// <summary>
         /// lbMensagemCnpjDuplicado control.
         /// </summary>
         /// <remarks>

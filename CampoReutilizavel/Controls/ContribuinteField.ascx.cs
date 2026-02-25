@@ -18,48 +18,78 @@ namespace CampoReutilizavel.Controls
 
         }
 
+        //Armazenamento da lista de contribuinte na Session
         protected void btnAdicionarLista_Click(object sender, EventArgs e)
         {
-            DataTable dt = (DataTable)Session["ContribuintesSelecionados"] ?? new DataTable();
+            AdicionarLista("Session");
+
+        }
+
+        protected void btnAdicionarListaVS_Click(object sender, EventArgs e)
+        {
+            AdicionarLista("ViewState");
+        }
+
+        protected void AdicionarLista(string tipoArmazenamento)
+        {
+            DataTable dt;
+
+            if (tipoArmazenamento == "Session")
+                dt = (DataTable)Session["ContribuintesSelecionados"] ?? new DataTable();
+            else
+                dt = (DataTable)ViewState["ContribuintesSelecionados"] ?? new DataTable();
 
             if (dt.Columns.Count == 0)
             {
-                dt.Columns.Add("CnpjContribuinte", typeof(string));
+                dt.Columns.Add("CNPJ", typeof(string)); 
                 dt.Columns.Add("NomeEmpresarial", typeof(string));
             }
 
             string nomeEmpresa = hfNomeEmpresa.Value;
             string cnpjDigitado = txtContribuinte.Text;
-
-            if (string.IsNullOrEmpty(nomeEmpresa))
-                nomeEmpresa = "Empresa selecionada";
-
             string cnpjLimpo = new string(cnpjDigitado.Where(char.IsDigit).ToArray());
+
             bool jaExiste = dt.AsEnumerable().Any(r =>
-                new string(r["CnpjContribuinte"].ToString().Where(char.IsDigit).ToArray()) == cnpjLimpo);
+                new string(r["CNPJ"].ToString().Where(char.IsDigit).ToArray()) == cnpjLimpo);
 
             if (!jaExiste)
             {
                 dt.Rows.Add(cnpjDigitado, nomeEmpresa);
-                Session["ContribuintesSelecionados"] = dt;
+
+                if (tipoArmazenamento == "Session")
+                {
+                    Session["ContribuintesSelecionados"] = dt;
+                }
+                else
+                {
+                    ViewState["ContribuintesSelecionados"] = dt;
+                   
+                }
+                RegistrarCnpjNoCookiePermanente(cnpjLimpo);
 
                 txtContribuinte.Text = "";
                 hfNomeEmpresa.Value = "";
-
-                lbMensagemCnpjAdicionado.Style["display"] = "block"; //mensagem de cnpj adicionado
-
-                lbMensagemCnpjDuplicado.Style["display"] = "none"; //mensagem de cnpj duplicado
-                btnAdicionarLista.Enabled = false;
-            }
-            else
-            {
-                txtContribuinte.Text = "";
-                hfNomeEmpresa.Value = "";
-                lbMensagemCnpjDuplicado.Style["display"] = "block"; //mensagem de cnpj duplicado
-                lbMensagemCnpjAdicionado.Style["display"] = "none"; //mensagem de cnpj adicionado
-                btnAdicionarLista.Enabled = false;
             }
         }
+
+        private void RegistrarCnpjNoCookiePermanente(string cnpj)
+        {
+            HttpCookie cookie = Request.Cookies["CnpjsValidados"] ?? new HttpCookie("CnpjsValidados");
+
+            List<string> lista = string.IsNullOrEmpty(cookie.Value)
+                ? new List<string>()
+                : cookie.Value.Split(',').ToList();
+
+            if (!lista.Contains(cnpj))
+            {
+                lista.Add(cnpj);
+                cookie.Value = string.Join(",", lista);
+                cookie.Expires = DateTime.Now.AddDays(7);
+                cookie.HttpOnly = false; 
+                Response.Cookies.Add(cookie);
+            }
+        }
+
     }
 
 }
