@@ -165,7 +165,7 @@ function validarCNPJApi(cnpj) {
         return;
     }
 
-    fetch(`/api/cnpj/${cnpj}`)
+    fetch(`https://localhost:44318/api/cnpj/${cnpj}`)
         .then(response => {
             if (!response.ok) {
                 if (sugestoes) {

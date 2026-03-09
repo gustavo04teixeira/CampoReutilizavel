@@ -153,6 +153,8 @@
     <Content Include="Global.asax" />
     <Content Include="Pages\AppContador.aspx" />
     <Content Include="Pages\AppFiscal.aspx" />
+    <Content Include="Pages\CriarCadastro.aspx" />
+    <Content Include="Pages\Login.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -223,7 +225,6 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\CnpjController.cs" />
     <Compile Include="Controls\ContribuinteField.ascx.cs">
       <DependentUpon>ContribuinteField.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -262,6 +263,20 @@
     </Compile>
     <Compile Include="Pages\AppFiscal.aspx.designer.cs">
       <DependentUpon>AppFiscal.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\CriarCadastro.aspx.cs">
+      <DependentUpon>CriarCadastro.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\CriarCadastro.aspx.designer.cs">
+      <DependentUpon>CriarCadastro.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ContribuinteService.asmx.cs">

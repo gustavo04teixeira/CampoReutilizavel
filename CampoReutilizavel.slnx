@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../ApiContribuintes/ApiContribuintes/ApiContribuintes.csproj" Id="a6509839-c9b0-41d1-b356-a783a5a14e0c" />
   <Project Path="CampoReutilizavel/CampoReutilizavel.csproj" Id="ef2daaae-cd1a-4811-87c4-b5c6fabc5713" />
 </Solution>

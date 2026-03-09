@@ -52,6 +52,7 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item"><a class="nav-link" runat="server" href="~/Pages/AppFiscal.aspx">Área do Fiscal</a></li>
                         <li class="nav-item"><a class="nav-link" runat="server" href="~/Pages/AppContador.aspx">Área do Contador</a></li>
+                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Pages/Login.aspx">Sair</a></li>
                         
                     </ul>
                 </div>
