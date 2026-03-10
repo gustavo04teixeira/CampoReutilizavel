@@ -51,24 +51,86 @@ namespace CampoReutilizavel.Pages
                 string TermoLimpoLogin = login.Trim(); 
                 string TermoLimpoSenha = senha.Trim();
 
-                string sql = "SELECT COUNT(*) FROM Cadastros WHERE email = @login AND senha = @senha";
-
+                string sql = "SELECT senha FROM Cadastros WHERE email = @login";
                 var comando = new System.Data.SqlClient.SqlCommand(sql, conexao);
-
                 comando.Parameters.AddWithValue("@login", TermoLimpoLogin);
-                comando.Parameters.AddWithValue("@senha", TermoLimpoSenha);
 
                 try
                 {
                     conexao.Open();
 
-                    int count = (int)comando.ExecuteScalar();
-                    return count > 0;
+                    object resultado = comando.ExecuteScalar();
+
+                    if(resultado != null)
+                    {
+                        string hashDoBanco = resultado.ToString();
+                        return BCrypt.Net.BCrypt.Verify(TermoLimpoSenha, hashDoBanco);
+
+                    }
+
+                    return false;
                 }
                 catch (System.Data.SqlClient.SqlException ex)
                 {
                     return false;
                 }
+            }
+        }
+
+        protected void btnEsqueceuSenha_Click(object sender, EventArgs e)
+        {
+            pnAlterarSenha.Visible = true;
+        }
+
+        protected void btnAlterarSenha_Click(object sender, EventArgs e)
+        {
+            string login = txtConfirmarEmail.Text.Trim();
+            string senha1 = txtNovaSenha.Text;
+            string senha2 = txtNovaSenha1.Text;
+
+            if(CriarCadastro.cadastroExistente(login) == true)
+            {
+                if(txtNovaSenha.Text == txtNovaSenha1.Text)
+                {
+                    using (var conexao = new System.Data.SqlClient.SqlConnection(getConnectionString()))
+                    {
+                        string TermoLimpoLogin = login.Trim();
+                        string TermoLimpoSenha = senha1.Trim();
+
+                        string senhaHash = BCrypt.Net.BCrypt.HashPassword(TermoLimpoSenha);
+                        string sql = "UPDATE Cadastros SET senha = @senha WHERE email = @login";
+                        var comando = new System.Data.SqlClient.SqlCommand(sql, conexao);
+                        comando.Parameters.AddWithValue("@login", TermoLimpoLogin);
+                        comando.Parameters.AddWithValue("@senha", senhaHash);
+                        try
+                        {
+                            conexao.Open();
+                            int rowsAffected = comando.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                lbMensagem.Text = "Senha alterada com sucesso!";
+                                lbMensagem.ForeColor = System.Drawing.Color.Green;
+                                pnAlterarSenha.Visible = false;
+                            }
+                            
+                        }
+                        catch (System.Data.SqlClient.SqlException ex)
+                        {
+                            lbMensagem.Text = "Erro ao conectar ao banco de dados. Por favor, tente novamente mais tarde.";
+                            lbMensagem.ForeColor = System.Drawing.Color.Red;
+                        }
+                    }
+                }
+                else
+                {
+                    lbMensagem.Text = "As senhas não coincidem. Por favor, verifique e tente novamente.";
+                    lbMensagem.ForeColor = System.Drawing.Color.Red;
+                }
+            }
+            else
+            {
+                lbMensagem.Text = "Email não encontrado. Por favor, verifique suas credenciais.";
+                lbMensagem.ForeColor = System.Drawing.Color.Red;
             }
         }
     }

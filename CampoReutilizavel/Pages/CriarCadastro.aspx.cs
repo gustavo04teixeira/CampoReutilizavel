@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using BCrypt.Net;
 
 namespace CampoReutilizavel.Pages
 {
@@ -24,6 +25,7 @@ namespace CampoReutilizavel.Pages
             string senha1 = txtSenha.Text.Trim();
             string senha2 = txtConfirmarSenha.Text.Trim();
 
+
             if (cadastroExistente(login) == true)
             {
                 lblMensagem.Text = "Login já existe. Por favor, escolha outro.";
@@ -35,14 +37,14 @@ namespace CampoReutilizavel.Pages
             {
                 using (var conexao = new System.Data.SqlClient.SqlConnection(getConnectionString()))
                 {
-                    string senha = txtSenha.Text.Trim();
+                    string senhaHash = BCrypt.Net.BCrypt.HashPassword(senha1);
 
                     string sql = "INSERT INTO Cadastros (email,senha) VALUES (@login, @senha)";
 
                     var comando = new System.Data.SqlClient.SqlCommand(sql, conexao);
 
                     comando.Parameters.AddWithValue("@login", login);
-                    comando.Parameters.AddWithValue("@senha", senha);
+                    comando.Parameters.AddWithValue("@senha", senhaHash);
                     try
                     {
                         conexao.Open();
