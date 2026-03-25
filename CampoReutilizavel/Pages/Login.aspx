@@ -67,7 +67,11 @@
                     
                     <div class="mb-2">
                         <asp:TextBox ID="txtConfirmarEmail" runat="server" CssClass="form-control form-control-sm" placeholder="Confirme seu e-mail"></asp:TextBox>
+                        <asp:Button ID="btnEnviarCodigo" runat="server" OnClick="btnEnviarCodigo_Click" Text="Enviar código" />
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="txtConfirmarEmail" Display="Dynamic" ForeColor="Red" Font-Size="XX-Small">Campo Obrigatório!</asp:RequiredFieldValidator>
+                        <br />
+                        <asp:TextBox ID="txtCodigoVerificacao" runat="server" placeholder="Código de verificação" TextMode="Number"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" Display="Dynamic" ForeColor="Red" Font-Size="XX-Small" ControlToValidate="txtCodigoVerificacao">Campo Obrigatório!</asp:RequiredFieldValidator>
                     </div>
                     <div class="mb-2">
                         <asp:TextBox ID="txtNovaSenha" runat="server" CssClass="form-control form-control-sm" TextMode="Password" placeholder="Nova senha"></asp:TextBox>

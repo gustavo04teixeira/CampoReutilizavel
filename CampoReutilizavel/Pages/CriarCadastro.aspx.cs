@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BCrypt.Net;
+using CampoReutilizavel.DAL;
 
 namespace CampoReutilizavel.Pages
 {
@@ -26,14 +27,14 @@ namespace CampoReutilizavel.Pages
             string senha2 = txtConfirmarSenha.Text.Trim();
 
 
-            if (cadastroExistente(login) == true)
+            if (UsuarioDAL.cadastroExistente(login) == true)
             {
                 lblMensagem.Text = "Login já existe. Por favor, escolha outro.";
                 lblMensagem.ForeColor = System.Drawing.Color.Red;
                 return;
             }
 
-            if(senha1 == senha2)
+            if (senha1 == senha2)
             {
                 using (var conexao = new System.Data.SqlClient.SqlConnection(getConnectionString()))
                 {
@@ -69,33 +70,5 @@ namespace CampoReutilizavel.Pages
             }
         }
 
-        public static bool cadastroExistente(string login)
-        {
-            using (var conexao = new System.Data.SqlClient.SqlConnection(getConnectionString()))
-            {
-
-                string termoLimpo = login.Trim();
-
-                string sql = "SELECT COUNT(*) FROM Cadastros WHERE email = @login";
-
-                var comando = new System.Data.SqlClient.SqlCommand(sql, conexao);
-
-                comando.Parameters.AddWithValue("@login", termoLimpo);
-
-                try
-                {
-                    conexao.Open();
-
-                    int count = (int)comando.ExecuteScalar();
-
-                    return count > 0;
-                }
-                catch (System.Data.SqlClient.SqlException ex)
-                {
-
-                    return false;
-                }
-            }
-        }
     }
 }

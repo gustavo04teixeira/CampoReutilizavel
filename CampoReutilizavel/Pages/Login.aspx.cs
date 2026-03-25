@@ -1,18 +1,20 @@
-﻿using System;
+﻿using CampoReutilizavel.DAL;
+using CampoReutilizavel.Services;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CampoReutilizavel.Pages
 {
     public partial class Login : System.Web.UI.Page
     {
-        private static string getConnectionString()
-        {
-            return System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
-        }
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -20,61 +22,25 @@ namespace CampoReutilizavel.Pages
 
         protected void btnLogin_Click(object sender, EventArgs e)
         {
-            string login = txtUsername.Text;
-            string senha = txtPassword.Text;
+            string login = txtUsername.Text.Trim();
+            string senha = txtPassword.Text.Trim();
 
-            if (CriarCadastro.cadastroExistente(login))
+            if (UsuarioDAL.cadastroExistente(login))
             {
-                if(verificarSenha(login, senha) == true)
+                if (UsuarioDAL.verificarSenha(login, senha))
                 {
                     Response.Redirect("~/Pages/App.aspx");
                 }
                 else
                 {
-                    lbMensagem.Text = "Senha e/ou e-mail incorretos. Por favor, tente novamente";
-                    lbMensagem.ForeColor = System.Drawing.Color.Red;
+                    mensagemErro("Senha e/ou e-mail incorretos. Por favor, tente novamente");
                 }
             }
             else
             {
-                lbMensagem.Text = "Login não encontrado. Por favor, verifique suas credenciais.";
-                lbMensagem.ForeColor = System.Drawing.Color.Red;
-                return;
+                mensagemErro("Senha e/ou e-mail incorretos. Por favor, tente novamente");
             }
-            
-        }
 
-        protected bool verificarSenha(string login, string senha)
-        {
-            using (var conexao = new System.Data.SqlClient.SqlConnection(getConnectionString()))
-            {
-                string TermoLimpoLogin = login.Trim(); 
-                string TermoLimpoSenha = senha.Trim();
-
-                string sql = "SELECT senha FROM Cadastros WHERE email = @login";
-                var comando = new System.Data.SqlClient.SqlCommand(sql, conexao);
-                comando.Parameters.AddWithValue("@login", TermoLimpoLogin);
-
-                try
-                {
-                    conexao.Open();
-
-                    object resultado = comando.ExecuteScalar();
-
-                    if(resultado != null)
-                    {
-                        string hashDoBanco = resultado.ToString();
-                        return BCrypt.Net.BCrypt.Verify(TermoLimpoSenha, hashDoBanco);
-
-                    }
-
-                    return false;
-                }
-                catch (System.Data.SqlClient.SqlException ex)
-                {
-                    return false;
-                }
-            }
         }
 
         protected void btnEsqueceuSenha_Click(object sender, EventArgs e)
@@ -85,53 +51,100 @@ namespace CampoReutilizavel.Pages
         protected void btnAlterarSenha_Click(object sender, EventArgs e)
         {
             string login = txtConfirmarEmail.Text.Trim();
-            string senha1 = txtNovaSenha.Text;
-            string senha2 = txtNovaSenha1.Text;
+            string senha = txtNovaSenha.Text.Trim();
+            int codigoVerificacao = int.Parse(txtCodigoVerificacao.Text.Trim());
 
-            if(CriarCadastro.cadastroExistente(login) == true)
+            if (senha != txtNovaSenha1.Text)
             {
-                if(txtNovaSenha.Text == txtNovaSenha1.Text)
-                {
-                    using (var conexao = new System.Data.SqlClient.SqlConnection(getConnectionString()))
-                    {
-                        string TermoLimpoLogin = login.Trim();
-                        string TermoLimpoSenha = senha1.Trim();
+                mensagemErro("As senhas digitadas não coincidem. Por favor, verifique e tente novamente.");
+                return;
+            }
 
-                        string senhaHash = BCrypt.Net.BCrypt.HashPassword(TermoLimpoSenha);
-                        string sql = "UPDATE Cadastros SET senha = @senha WHERE email = @login";
-                        var comando = new System.Data.SqlClient.SqlCommand(sql, conexao);
-                        comando.Parameters.AddWithValue("@login", TermoLimpoLogin);
-                        comando.Parameters.AddWithValue("@senha", senhaHash);
-                        try
-                        {
-                            conexao.Open();
-                            int rowsAffected = comando.ExecuteNonQuery();
-                            if (rowsAffected > 0)
-                            {
-                                lbMensagem.Text = "Senha alterada com sucesso!";
-                                lbMensagem.ForeColor = System.Drawing.Color.Green;
-                                pnAlterarSenha.Visible = false;
-                            }
-                            
-                        }
-                        catch (System.Data.SqlClient.SqlException ex)
-                        {
-                            lbMensagem.Text = "Erro ao conectar ao banco de dados. Por favor, tente novamente mais tarde.";
-                            lbMensagem.ForeColor = System.Drawing.Color.Red;
-                        }
-                    }
-                }
-                else
-                {
-                    lbMensagem.Text = "As senhas não coincidem. Por favor, verifique e tente novamente.";
-                    lbMensagem.ForeColor = System.Drawing.Color.Red;
-                }
+            var UsuarioService = new UsuarioService();
+
+            var resultadoCodigo = UsuarioService.obterCodigoVerificacao(login, codigoVerificacao);
+
+            if(resultadoCodigo.Sucesso)
+            {
+                mensagemSucesso(resultadoCodigo.Mensagem);
+                pnAlterarSenha.Visible = false;
             }
             else
             {
-                lbMensagem.Text = "Email não encontrado. Por favor, verifique suas credenciais.";
-                lbMensagem.ForeColor = System.Drawing.Color.Red;
+                mensagemErro(resultadoCodigo.Mensagem);
+            }
+
+            if (UsuarioDAL.cadastroExistente(login) == true)
+            {
+                try
+                {
+                    UsuarioDAL.alterarSenha(login, senha);
+
+                    mensagemSucesso("Senha alterada com sucesso! Acesse com a nova senha.");
+                    pnAlterarSenha.Visible = false;
+                }
+                catch (Exception ex)
+                {
+                    mensagemErro("Erro ao conectar ao banco de dados.Por favor, tente novamente mais tarde.");
+                }
             }
         }
+
+        protected void btnEnviarCodigo_Click(object sender, EventArgs e)
+        {
+            string email = txtConfirmarEmail.Text.Trim();
+            Random random = new Random();
+            int codigo = random.Next(10000, 99999);
+
+            UsuarioDAL.alterarCodigoVerificacao(email, codigo);
+
+            enviarEmail(email, codigo);
+        }
+
+        protected void enviarEmail(string email, int codigo)
+        {
+
+            var mensagem = new MimeMessage();
+            mensagem.From.Add(new MailboxAddress("Sistema Campo Reutilizável", "gtestrategiadigital@gmail.com"));
+            mensagem.To.Add(new MailboxAddress("", email));
+            mensagem.Subject = "Código de Recuperação de Senha";
+
+            mensagem.Body = new TextPart("plain")
+            {
+                Text = $"Olá,\n\nSeu código de recuperação de senha é: {codigo}\n\nSe você não solicitou essa alteração, por favor ignore este email."
+            };
+
+            using (var client = new SmtpClient())
+            {
+                try
+                {
+                    client.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                    client.Authenticate("gtestrategiadigital@gmail.com", "mfrr esws ybsm wxyo\r\n");
+
+                    client.Send(mensagem);
+                    client.Disconnect(true);
+
+                    mensagemSucesso("Código de recuperação enviado para o email fornecido.");
+                }
+                catch (Exception ex)
+                {
+                    mensagemErro("Erro ao enviar email. Por favor, tente novamente mais tarde.");
+                }
+            }
+        }
+
+        protected void mensagemErro(string mensagem)
+        {
+            lbMensagem.Text = mensagem;
+            lbMensagem.ForeColor = System.Drawing.Color.Red;
+        }
+
+        protected void mensagemSucesso(string mensagem)
+        {
+            lbMensagem.Text = mensagem;
+            lbMensagem.ForeColor = System.Drawing.Color.Green;
+        }
+
+
     }
 }
